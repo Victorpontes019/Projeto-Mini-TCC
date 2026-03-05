@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.19.0",
+    "mysql3": "^0.7.5"
+  }
+}
