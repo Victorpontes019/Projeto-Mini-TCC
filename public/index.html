@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Cadastro de Eventos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Cadastro de Eventos</h2>
+
+<div class="formulario">
+
+<input type="text" id="nome" placeholder="Nome do evento">
+
+<input type="date" id="data_evento">
+
+<input type="text" id="local" placeholder="Local">
+
+<input type="text" id="descricao" placeholder="Descrição">
+
+<button onclick="cadastrarEvento()">Cadastrar</button>
+
+</div>
+
+<h3>Lista de Eventos</h3>
+
+<table border="1">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>Data</th>
+<th>Local</th>
+<th>Descrição</th>
+<th>Ação</th>
+</tr>
+</thead>
+
+<tbody id="tabelaEventos"></tbody>
+
+</table>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
