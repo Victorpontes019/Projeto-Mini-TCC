@@ -1,18 +1,19 @@
 const db = require('../database/database');
 
 
-// LISTAR TODOS
+// LISTAR TODOS OS EVENTOS
 exports.listarEventos = (req, res) => {
   db.query("SELECT * FROM eventos", (err, results) => {
     if (err) {
       return res.status(500).json({ erro: err.message });
     }
+
     res.json(results);
   });
 };
 
 
-// BUSCAR POR ID
+// BUSCAR EVENTO POR ID
 exports.buscarEvento = (req, res) => {
   const id = req.params.id;
 
@@ -30,13 +31,13 @@ exports.buscarEvento = (req, res) => {
 };
 
 
-// INSERIR
+// CRIAR EVENTO
 exports.criarEvento = (req, res) => {
-  const { nome, data, local, descrição } = req.body;
+  const { nome, data_evento, local, descricao } = req.body;
 
   db.query(
-    "INSERT INTO eventos (nome, data, local, descrição) VALUES (?, ?, ?)",
-    [nome, data, local, descrição],
+    "INSERT INTO eventos (nome, data_evento, local, descricao) VALUES (?, ?, ?, ?)",
+    [nome, data_evento, local, descricao],
     (err, result) => {
       if (err) {
         return res.status(500).json({ erro: err.message });
@@ -51,14 +52,14 @@ exports.criarEvento = (req, res) => {
 };
 
 
-// ATUALIZAR
+// ATUALIZAR EVENTO
 exports.atualizarEvento = (req, res) => {
   const id = req.params.id;
-  const { nome, data, local, descrição } = req.body;
+  const { nome, data_evento, local, descricao } = req.body;
 
   db.query(
-    "UPDATE eventos SET nome = ?, data = ?, local = ? descrição = ? WHERE id = ?",
-    [nome, data, local, descrição, id],
+    "UPDATE eventos SET nome = ?, data_evento = ?, local = ?, descricao = ? WHERE id = ?",
+    [nome, data_evento, local, descricao, id],
     (err, result) => {
       if (err) {
         return res.status(500).json({ erro: err.message });
@@ -74,19 +75,23 @@ exports.atualizarEvento = (req, res) => {
 };
 
 
-// DELETAR
+// DELETAR EVENTO
 exports.deletarEvento = (req, res) => {
   const id = req.params.id;
 
-  db.query("DELETE FROM eventos WHERE id = ?", [id], (err, result) => {
-    if (err) {
-      return res.status(500).json({ erro: err.message });
-    }
+  db.query(
+    "DELETE FROM eventos WHERE id = ?",
+    [id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ erro: err.message });
+      }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ mensagem: "Evento não encontrado" });
-    }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ mensagem: "Evento não encontrado" });
+      }
 
-    res.json({ mensagem: "Evento deletado com sucesso!" });
-  });
+      res.json({ mensagem: "Evento deletado com sucesso!" });
+    }
+  );
 };

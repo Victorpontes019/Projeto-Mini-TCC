@@ -4,7 +4,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '', // padrão do XAMPP
-  database: 'serviços'
+  database: 'servicos'
 });
 
 db.connect((err) => {

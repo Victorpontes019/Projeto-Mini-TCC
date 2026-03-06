@@ -1,128 +1,106 @@
-// Endereço da nossa API backend
-// Todas as requisições (GET, POST, DELETE) irão para essa URL
 const api = "http://localhost:3000/api/eventos";
 
 
-// ===============================
-// FUNÇÃO PARA CADASTRAR EVENTO
-// ===============================
-function cadastrarEvento() {
+// CADASTRAR EVENTO
+function cadastrarEvento(){
 
-    // Captura os valores digitados nos inputs do HTML
-    const nome = document.getElementById("nome").value;
-    const data = document.getElementById("data").value;
-    const local = document.getElementById("local").value;
-    const descrição = document.getElementById("descrição").value;
+const nome = document.getElementById("nome").value;
+const data_evento = document.getElementById("data_evento").value;
+const local = document.getElementById("local").value;
+const descricao = document.getElementById("descricao").value;
 
-    // Validação simples: impede envio com campo vazio
-    if (!nome || !data || !local || !descrição) {
-        alert("Preencha todos os campos!");
-        return; // Interrompe a função
-    }
+if(!nome || !data_evento || !local || !descricao){
+alert("Preencha todos os campos!");
+return;
+}
 
-    // Faz requisição HTTP para a API usando fetch
-    fetch(api, {
+fetch(api,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({
+nome:nome,
+data_evento:data_evento,
+local:local,
+descricao:descricao
+})
+})
+.then(res=>res.json())
+.then(()=>{
 
-        // Método HTTP usado para criar um novo registro
-        method: "POST",
+listarEventos();
+limparCampos();
 
-        // Cabeçalho informando que estamos enviando JSON
-        headers: {
-            "Content-Type": "application/json"
-        },
+});
 
-        // Converte o objeto JavaScript em JSON
-        body: JSON.stringify({ nome, data, local, descrição })
-    })
-    .then(res => res.json()) // Converte a resposta para JSON
-    .then(() => {
-
-        // Atualiza a lista de Eventos após cadastrar
-        listarEventos();
-
-        // Limpa os campos do formulário
-        limparCampos();
-    });
 }
 
 
 
-// ===============================
-// FUNÇÃO PARA LISTAR EVENTOS
-// ===============================
-function listarEventos() {
+// LISTAR EVENTOS
+function listarEventos(){
 
-    // Faz requisição GET para buscar todos os eventos
-    fetch(api)
-    .then(res => res.json()) // Converte resposta para JSON
-    .then(eventos => {
+fetch(api)
+.then(res=>res.json())
+.then(eventos=>{
 
-        // Pega o elemento <tbody> da tabela
-        const tabela = document.getElementById("tabelaEventos");
+const tabela = document.getElementById("tabelaEventos");
 
-        // Limpa a tabela antes de preencher novamente
-        tabela.innerHTML = "";
+tabela.innerHTML="";
 
-        // Para cada evento retornado do banco
-        eventos.forEach(evento => {
+eventos.forEach(evento => {
 
-            // Adiciona uma nova linha na tabela
-            tabela.innerHTML += `
-                <tr>
-                    <td>${evento.id}</td>
-                    <td>${evento.nome}</td>
-                    <td>${evento.data}</td>
-                    <td>${evento.data}</td>
-                    <td>${evento.descrição}</td>
-                    <td>
-                        <button onclick="deletarAluno(${evento.id})">
-                            Excluir
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-    });
+tabela.innerHTML += `
+<tr>
+<td>${evento.id}</td>
+<td>${evento.nome}</td>
+<td>${evento.data_evento}</td>
+<td>${evento.local}</td>
+<td>${evento.descricao}</td>
+
+<td>
+<button onclick="deletarEvento(${evento.id})">
+Excluir
+</button>
+</td>
+
+</tr>
+`;
+
+});
+
+});
+
 }
 
 
 
-// ===============================
-// FUNÇÃO PARA DELETAR EVENTO
-// ===============================
-function deletarEvento(id) {
+// DELETAR EVENTO
+function deletarEvento(id){
 
-    // Faz requisição DELETE passando o ID na URL
-    fetch(`${api}/${id}`, {
-        method: "DELETE"
-    })
-    .then(() => {
+fetch(`${api}/${id}`,{
+method:"DELETE"
+})
+.then(()=>{
+listarEventos();
+});
 
-        // Após deletar, atualiza a lista novamente
-        listarEvento();
-    });
 }
 
 
 
-// ===============================
-// FUNÇÃO PARA LIMPAR OS CAMPOS
-// ===============================
-function limparCampos() {
+// LIMPAR CAMPOS
+function limparCampos(){
 
-    // Define valor vazio para cada input
-    document.getElementById("nome").value = "";
-    document.getElementById("data").value = "";
-    document.getElementById("local").value = "";
-    document.getElementById("descrição").value = "";
+document.getElementById("nome").value="";
+document.getElementById("data_evento").value="";
+document.getElementById("local").value="";
+document.getElementById("descricao").value="";
+
 }
 
 
 
-// ===============================
-// CARREGA A LISTA ASSIM QUE A PÁGINA ABRE
-// ===============================
-
-// Quando o navegador carregar a página,
-// essa função será executada automaticamente
+// CARREGAR EVENTOS AO ABRIR
 listarEventos();
