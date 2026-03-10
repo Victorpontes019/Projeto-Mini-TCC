@@ -1,11 +1,11 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f6f8;
+    background-color: #f2e8d5;
     padding: 40px;
 }
 
 .container {
-    background: white;
+    background: rgb(255, 255, 255);
     padding: 30px;
     border-radius: 8px;
     max-width: 1000px;
@@ -26,21 +26,23 @@ h2, h3 {
 
 input {
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #000000;
     border-radius: 4px;
 }
 
 button {
     padding: 8px 15px;
     border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-}
+    background-color: #1faa49; 
+    border-radius: 5px;
+     }
+
+
+
+
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #2d8f45;
 }
 
 table {
@@ -50,11 +52,11 @@ table {
 }
 
 table, th, td {
-    border: 1px solid #ccc;
+    border: 1px solid #313131;
 }
 
 th {
-    background-color: #007bff;
+    background-color: #2fa352;
     color: white;
 }
 
@@ -64,9 +66,23 @@ th, td {
 }
 
 td button {
-    background-color: #dc3545;
+    background-color: #ff0000d0;
+    color: white;
+    border-radius: 8px
+     ;
 }
 
 td button:hover {
-    background-color: #a71d2a;
+    background-color: #8b0008;
+    ;
 }
+.editar{
+    background-color: #1479cc;
+}
+
+.editar:hover{
+    background-color: #00a0eb;
+}
+
+
+    

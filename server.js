@@ -12,5 +12,3 @@ app.use('/api', eventosRoutes);
 app.listen(3000, () => {
   console.log('Servidor rodando na porta 3000');
 });
-
-https://github.com/Victorpontes019/Projeto-Mini-TCC.git
