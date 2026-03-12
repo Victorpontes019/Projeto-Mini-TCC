@@ -2,67 +2,87 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Eventos | TCC</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Projeto Mini-TCC</title>
+    <link rel="stylesheet" href="styleLogin.css">
 </head>
 <body>
+    <div class="login-container">
+        <div class="form-box">
+            <div class="button-box">
+                <div id="btn"></div>
+                <button type="button" class="toggle-btn" onclick="loginUsuario()">Usuário</button>
+                <button type="button" class="toggle-btn" onclick="loginAdmin()">Admin</button>
+            </div>
 
-<div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 id="titulo-pagina">Cadastro de Eventos</h2>
-        <button onclick="logout()" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Sair</button>
+            <form id="usuario" class="input-group">
+                <h2>Login Usuário</h2>
+                <input type="text" id="userEmail" class="input-field" placeholder="E-mail: user@tcc.com" required>
+                <input type="password" id="userPass" class="input-field" placeholder="Senha: 123" required>
+                <button type="submit" class="submit-btn">Entrar</button>
+            </form>
+
+            <form id="admin" class="input-group">
+                <h2>Acesso Restrito</h2>
+                <input type="text" id="adminId" class="input-field" placeholder="ID: admin01" required>
+                <input type="password" id="adminPass" class="input-field" placeholder="Chave: admin" required>
+                <button type="submit" class="submit-btn admin-color">Acessar Painel</button>
+            </form>
+        </div>
     </div>
 
-    <div class="formulario" id="area-cadastro">
-        <input type="text" id="nome" placeholder="Nome do evento">
-        <input type="date" id="data_evento">
-        <input type="text" id="local" placeholder="Local">
-        <input type="text" id="descricao" placeholder="Descrição">
-        <button onclick="cadastrarEvento()">Cadastrar</button>
-    </div>
+    <script>
+        // Elementos para animação das abas
+        var x = document.getElementById("usuario");
+        var y = document.getElementById("admin");
+        var z = document.getElementById("btn");
 
-    <h3>Lista de Eventos</h3>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Data</th>
-                <th>Local</th>
-                <th>Descrição</th>
-                <th id="coluna-acao">Ação</th>
-            </tr>
-        </thead>
-        <tbody id="tabelaEventos"></tbody>
-    </table>
-</div>
-
-<script src="script.js"></script>
-<script>
-    // Função de Logout
-    function logout() {
-        localStorage.removeItem('tipoUsuario');
-        window.location.href = "login.html";
-    }
-
-    // Lógica de Permissão
-    window.onload = function() {
-        const tipo = localStorage.getItem('tipoUsuario');
-        const areaCadastro = document.getElementById('area-cadastro');
-        const colunaAcao = document.getElementById('coluna-acao');
-        const titulo = document.getElementById('titulo-pagina');
-
-        if (tipo === 'comum') {
-            // Esconde o formulário de cadastro
-            areaCadastro.style.display = 'none';
-            // Esconde o cabeçalho "Ação" da tabela
-            colunaAcao.style.display = 'none';
-            // Muda o título
-            titulo.innerText = "Visualização de Eventos";
+        function loginAdmin() {
+            x.style.left = "-400px";
+            y.style.left = "50px";
+            z.style.left = "110px";
         }
+
+        function loginUsuario() {
+            x.style.left = "50px";
+            y.style.left = "450px";
+            z.style.left = "0";
+        }
+
+        // --- LÓGICA DE LOGIN ---
         
-        renderizarTabela(); // Chama a função que está no seu script.js
-    };
-</script>
+        const CREDENCIAIS = {
+            usuario: { email: "user@tcc.com", senha: "123" },
+            admin: { id: "admin01", senha: "admin" }
+        };
+
+        // Validação Usuário
+        document.getElementById('usuario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('userEmail').value;
+            const senha = document.getElementById('userPass').value;
+
+            if (email === CREDENCIAIS.usuario.email && senha === CREDENCIAIS.usuario.senha) {
+                localStorage.setItem('tipoUsuario', 'comum'); // Salva quem logou
+                window.location.href = "index.html";
+            } else {
+                alert("E-mail ou Senha de usuário incorretos!");
+            }
+        });
+
+        // Validação Admin
+        document.getElementById('admin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('adminId').value;
+            const senha = document.getElementById('adminPass').value;
+
+            if (id === CREDENCIAIS.admin.id && senha === CREDENCIAIS.admin.senha) {
+                localStorage.setItem('tipoUsuario', 'admin'); // Salva quem logou
+                window.location.href = "index.html";
+            } else {
+                alert("ID ou Chave de Admin incorretos!");
+            }
+        });
+    </script>
 </body>
 </html>
