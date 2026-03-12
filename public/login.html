@@ -1,58 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
-<link rel="stylesheet" href="styleLogin.css">
+    <meta charset="UTF-8">
+    <title>Sistema de Eventos | TCC</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="container">
-<h2>Login</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="titulo-pagina">Cadastro de Eventos</h2>
+        <button onclick="logout()" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Sair</button>
+    </div>
 
-<input type="email" id="email" placeholder="Email">
-<br><br>
+    <div class="formulario" id="area-cadastro">
+        <input type="text" id="nome" placeholder="Nome do evento">
+        <input type="date" id="data_evento">
+        <input type="text" id="local" placeholder="Local">
+        <input type="text" id="descricao" placeholder="Descrição">
+        <button onclick="cadastrarEvento()">Cadastrar</button>
+    </div>
 
-<input type="password" id="senha" placeholder="Senha">
-<br><br>
-
-<button onclick="login()">Entrar</button>
-
+    <h3>Lista de Eventos</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Data</th>
+                <th>Local</th>
+                <th>Descrição</th>
+                <th id="coluna-acao">Ação</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaEventos"></tbody>
+    </table>
 </div>
 
+<script src="script.js"></script>
 <script>
+    // Função de Logout
+    function logout() {
+        localStorage.removeItem('tipoUsuario');
+        window.location.href = "login.html";
+    }
 
-async function login(){
+    // Lógica de Permissão
+    window.onload = function() {
+        const tipo = localStorage.getItem('tipoUsuario');
+        const areaCadastro = document.getElementById('area-cadastro');
+        const colunaAcao = document.getElementById('coluna-acao');
+        const titulo = document.getElementById('titulo-pagina');
 
-const email = document.getElementById("email").value
-const senha = document.getElementById("senha").value
-
-const resposta = await fetch("/login",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({email,senha})
-})
-
-const dados = await resposta.json()
-
-if(dados.tipo === "admin"){
-window.location.href = "/index.html"
-}
-
-else if(dados.tipo === "usuario"){
-window.location.href = "/usuario.html"
-}
-
-else{
-alert("Login inválido")
-}
-
-}
-
+        if (tipo === 'comum') {
+            // Esconde o formulário de cadastro
+            areaCadastro.style.display = 'none';
+            // Esconde o cabeçalho "Ação" da tabela
+            colunaAcao.style.display = 'none';
+            // Muda o título
+            titulo.innerText = "Visualização de Eventos";
+        }
+        
+        renderizarTabela(); // Chama a função que está no seu script.js
+    };
 </script>
-
 </body>
 </html>
