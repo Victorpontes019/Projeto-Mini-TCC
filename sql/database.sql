@@ -1,11 +1,8 @@
--- Criar banco de dados
 CREATE DATABASE servicos;
 
--- Conectar ao banco (executar no terminal do psql)
 \c servicos;
 
--- Criar tabela
-CREATE TABLE IF NOT EXISTS eventos (
+CREATE TABLE eventos (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     data_evento DATE NOT NULL,
@@ -13,11 +10,7 @@ CREATE TABLE IF NOT EXISTS eventos (
     descricao TEXT NOT NULL
 );
 
--- Inserir dados
 INSERT INTO eventos (nome, data_evento, local, descricao)
 VALUES
 ('Festa', '2026-03-27', 'Festa da faculdade', 'Evento de confraternização'),
 ('Show', '2026-12-30', 'Festa da virada', 'Show de ano novo');
-
--- Consultar dados
-SELECT * FROM eventos;

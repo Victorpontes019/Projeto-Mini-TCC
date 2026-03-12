@@ -1,18 +1,11 @@
-const mysql = require('mysql2');
+require('dotenv').config();
+const { Pool } = require('pg');
 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '', // padrão do XAMPP
-  database: 'servicos'
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error('Erro ao conectar ao MySQL:', err);
-  } else {
-    console.log('Conectado ao MySQL com sucesso!');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
   }
 });
 
-module.exports = db;
+module.exports = pool;

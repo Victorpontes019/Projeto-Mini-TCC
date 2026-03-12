@@ -1,97 +1,70 @@
-const db = require('../database/database');
+const pool = require('../database/database');
 
-
-// LISTAR TODOS OS EVENTOS
-exports.listarEventos = (req, res) => {
-  db.query("SELECT * FROM eventos", (err, results) => {
-    if (err) {
-      return res.status(500).json({ erro: err.message });
-    }
-
-    res.json(results);
-  });
+exports.listarEventos = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM eventos');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 };
 
+exports.buscarEvento = async (req, res) => {
+  const { id } = req.params;
 
-// BUSCAR EVENTO POR ID
-exports.buscarEvento = (req, res) => {
-  const id = req.params.id;
+  try {
+    const result = await pool.query(
+      'SELECT * FROM eventos WHERE id = $1',
+      [id]
+    );
 
-  db.query("SELECT * FROM eventos WHERE id = ?", [id], (err, results) => {
-    if (err) {
-      return res.status(500).json({ erro: err.message });
-    }
-
-    if (results.length === 0) {
-      return res.status(404).json({ mensagem: "Evento não encontrado" });
-    }
-
-    res.json(results[0]);
-  });
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 };
 
-
-// CRIAR EVENTO
-exports.criarEvento = (req, res) => {
+exports.criarEvento = async (req, res) => {
   const { nome, data_evento, local, descricao } = req.body;
 
-  db.query(
-    "INSERT INTO eventos (nome, data_evento, local, descricao) VALUES (?, ?, ?, ?)",
-    [nome, data_evento, local, descricao],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    const result = await pool.query(
+      `INSERT INTO eventos (nome, data_evento, local, descricao)
+       VALUES ($1,$2,$3,$4) RETURNING *`,
+      [nome, data_evento, local, descricao]
+    );
 
-      res.status(201).json({
-        mensagem: "Evento criado com sucesso!",
-        id: result.insertId
-      });
-    }
-  );
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 };
 
-
-// ATUALIZAR EVENTO
-exports.atualizarEvento = (req, res) => {
-  const id = req.params.id;
+exports.atualizarEvento = async (req, res) => {
+  const { id } = req.params;
   const { nome, data_evento, local, descricao } = req.body;
 
-  db.query(
-    "UPDATE eventos SET nome = ?, data_evento = ?, local = ?, descricao = ? WHERE id = ?",
-    [nome, data_evento, local, descricao, id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
+  try {
+    const result = await pool.query(
+      `UPDATE eventos 
+       SET nome=$1, data_evento=$2, local=$3, descricao=$4
+       WHERE id=$5 RETURNING *`,
+      [nome, data_evento, local, descricao, id]
+    );
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ mensagem: "Evento não encontrado" });
-      }
-
-      res.json({ mensagem: "Evento atualizado com sucesso!" });
-    }
-  );
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 };
 
+exports.deletarEvento = async (req, res) => {
+  const { id } = req.params;
 
-// DELETAR EVENTO
-exports.deletarEvento = (req, res) => {
-  const id = req.params.id;
-
-  db.query(
-    "DELETE FROM eventos WHERE id = ?",
-    [id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ erro: err.message });
-      }
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ mensagem: "Evento não encontrado" });
-      }
-
-      res.json({ mensagem: "Evento deletado com sucesso!" });
-    }
-  );
+  try {
+    await pool.query('DELETE FROM eventos WHERE id=$1', [id]);
+    res.json({ mensagem: 'Evento deletado com sucesso' });
+  } catch (error) {
+    res.status(500).json({ erro: error.message });
+  }
 };
