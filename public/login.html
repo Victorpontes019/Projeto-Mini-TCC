@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="styleLogin.css">
+</head>
+
+<body>
+
+<div class="container">
+<h2>Login</h2>
+
+<input type="email" id="email" placeholder="Email">
+<br><br>
+
+<input type="password" id="senha" placeholder="Senha">
+<br><br>
+
+<button onclick="login()">Entrar</button>
+
+</div>
+
+<script>
+
+async function login(){
+
+const email = document.getElementById("email").value
+const senha = document.getElementById("senha").value
+
+const resposta = await fetch("/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({email,senha})
+})
+
+const dados = await resposta.json()
+
+if(dados.tipo === "admin"){
+window.location.href = "/index.html"
+}
+
+else if(dados.tipo === "usuario"){
+window.location.href = "/usuario.html"
+}
+
+else{
+alert("Login inválido")
+}
+
+}
+
+</script>
+
+</body>
+</html>

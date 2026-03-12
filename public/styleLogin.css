@@ -1,0 +1,100 @@
+/* Reset básico */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Fundo da página */
+body{
+background-color:#d9ccb5;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+/* Container principal */
+.container{
+background:#eaeaea;
+padding:30px;
+border-radius:10px;
+width:900px;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+/* Títulos */
+h1,h2{
+margin-bottom:20px;
+}
+
+/* Inputs */
+input{
+padding:10px;
+border:2px solid #333;
+border-radius:5px;
+margin:5px;
+}
+
+/* Botões */
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* Botão cadastrar */
+button{
+background-color:#2ea44f;
+color:white;
+}
+
+button:hover{
+background-color:#238636;
+}
+
+/* Botão excluir */
+.btn-excluir{
+background-color:#ff3b3b;
+}
+
+.btn-excluir:hover{
+background-color:#cc0000;
+}
+
+/* Botão editar */
+.btn-editar{
+background-color:#2b7cd3;
+}
+
+.btn-editar:hover{
+background-color:#1a5fa5;
+}
+
+/* Tabela */
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+/* Cabeçalho da tabela */
+thead{
+background:#2ea44f;
+color:white;
+}
+
+th, td{
+border:1px solid #333;
+padding:10px;
+text-align:center;
+}
+
+/* Linhas alternadas */
+tbody tr:nth-child(even){
+background:#f5f5f5;
+}

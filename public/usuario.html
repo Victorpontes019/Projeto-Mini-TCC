@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Eventos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Lista de Eventos</h1>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>Data</th>
+<th>Local</th>
+<th>Descrição</th>
+</tr>
+</thead>
+
+<tbody id="tabelaEventos">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+async function carregarEventos(){
+
+try{
+
+const resposta = await fetch("/api/eventos")
+const eventos = await resposta.json()
+
+const tabela = document.getElementById("tabelaEventos")
+tabela.innerHTML = ""
+
+eventos.forEach(evento => {
+
+const linha = `
+<tr>
+<td>${evento.id}</td>
+<td>${evento.nome}</td>
+<td>${evento.data_evento}</td>
+<td>${evento.local}</td>
+<td>${evento.descricao}</td>
+</tr>
+`
+
+tabela.innerHTML += linha
+
+})
+
+}catch(erro){
+
+console.error("Erro ao carregar eventos:", erro)
+
+}
+
+}
+
+carregarEventos()
+
+</script>
+
+</body>
+</html>
