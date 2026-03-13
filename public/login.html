@@ -1,58 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
+
 <head>
-<title>Painel Admin</title>
-<link rel="stylesheet" href="style.css">
-
-<script>
-if(localStorage.getItem("tipoUsuario") !== "admin"){
-window.location.href="login.html"
-}
-</script>
-
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="styleLogin.css">
 </head>
 
 <body>
 
-<button onclick="logout()">Sair</button>
+<div class="login-container">
 
-<h1>Painel de Eventos</h1>
+<form id="usuario">
 
-<input id="nome" placeholder="Nome">
-<input id="data_evento" type="date">
-<input id="local" placeholder="Local">
-<input id="descricao" placeholder="Descrição">
+<h2>Login Usuário</h2>
 
-<button onclick="cadastrarEvento()">Salvar</button>
+<input type="text" id="userEmail" placeholder="user@tcc.com">
+<input type="password" id="userPass" placeholder="123">
 
-<table border="1">
+<button type="submit">Entrar</button>
 
-<thead>
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>Data</th>
-<th>Local</th>
-<th>Descrição</th>
-<th>Ações</th>
-</tr>
-</thead>
+</form>
 
-<tbody id="tabelaEventos"></tbody>
+<hr>
 
-</table>
+<form id="admin">
 
-<script src="script.js"></script>
+<h2>Login Admin</h2>
+
+<input type="text" id="adminId" placeholder="admin">
+<input type="password" id="adminPass" placeholder="1234">
+
+<button type="submit">Entrar</button>
+
+</form>
+
+</div>
+
 
 <script>
 
-function logout(){
+document.getElementById('usuario').addEventListener('submit', function(e){
 
-localStorage.removeItem("tipoUsuario")
+e.preventDefault()
 
-window.location.href="login.html"
+const email = document.getElementById("userEmail").value
+const senha = document.getElementById("userPass").value
+
+if(email === "user@tcc.com" && senha === "123"){
+
+localStorage.setItem("tipoUsuario","comum")
+window.location.href="usuario.html"
+
+}else{
+
+alert("Login inválido")
 
 }
+
+})
+
+
+document.getElementById('admin').addEventListener('submit', async function(e){
+
+e.preventDefault()
+
+const usuario = document.getElementById("adminId").value
+const senha = document.getElementById("adminPass").value
+
+const resposta = await fetch("/api/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({usuario,senha})
+})
+
+const dados = await resposta.json()
+
+if(dados.sucesso){
+
+localStorage.setItem("tipoUsuario","admin")
+window.location.href="index.html"
+
+}else{
+
+alert("Login admin inválido")
+
+}
+
+})
 
 </script>
 

@@ -3,7 +3,6 @@ const api = "http://localhost:3000/api/eventos";
 let idEditando = null;
 
 
-// FORMATAR DATA (remove horário)
 // FORMATAR DATA
 function formatarData(data) {
 
@@ -16,11 +15,15 @@ function formatarData(data) {
 }
 
 
-
 // CADASTRAR OU ATUALIZAR EVENTO
 function cadastrarEvento() {
 
-@@ -28,119 +27,108 @@
+    const nome = document.getElementById("nome").value;
+    const data_evento = document.getElementById("data_evento").value;
+    const local = document.getElementById("local").value;
+    const descricao = document.getElementById("descricao").value;
+
+    if (!nome || !data_evento || !local || !descricao) {
         alert("Preencha todos os campos!");
         return;
     }
@@ -45,10 +48,7 @@ function cadastrarEvento() {
 
         listarEventos();
         limparCampos();
-
         idEditando = null;
-
-        document.getElementById("btnSalvar").innerText = "Cadastrar";
 
     })
     .catch(err => {
@@ -56,7 +56,6 @@ function cadastrarEvento() {
     });
 
 }
-
 
 
 // LISTAR EVENTOS
@@ -67,7 +66,6 @@ function listarEventos() {
     .then(eventos => {
 
         const tabela = document.getElementById("tabelaEventos");
-
         tabela.innerHTML = "";
 
         eventos.forEach(evento => {
@@ -80,13 +78,6 @@ function listarEventos() {
                 <td>${evento.local}</td>
                 <td>${evento.descricao}</td>
                 <td>
-                    <button onclick="deletarEvento(${evento.id})">
-                        Excluir
-                    </button>
-
-                    <button class="editar" onclick='editarEvento(${JSON.stringify(evento)})'>
-                        Editar
-                    </button>
                     <button onclick="deletarEvento(${evento.id})">Excluir</button>
                     <button onclick='editarEvento(${JSON.stringify(evento)})'>Editar</button>
                 </td>
@@ -103,7 +94,6 @@ function listarEventos() {
 }
 
 
-
 // EDITAR EVENTO
 function editarEvento(evento) {
 
@@ -114,10 +104,7 @@ function editarEvento(evento) {
 
     idEditando = evento.id;
 
-    document.getElementById("btnSalvar").innerText = "Atualizar";
-
 }
-
 
 
 // DELETAR EVENTO
@@ -126,14 +113,10 @@ function deletarEvento(id) {
     fetch(`${api}/${id}`, {
         method: "DELETE"
     })
-    .then(() => {
-        listarEventos();
-    });
     .then(() => listarEventos())
     .catch(err => console.error("Erro ao deletar:", err));
 
 }
-
 
 
 // LIMPAR CAMPOS
@@ -145,7 +128,6 @@ function limparCampos() {
     document.getElementById("descricao").value = "";
 
 }
-
 
 
 // CARREGAR EVENTOS
