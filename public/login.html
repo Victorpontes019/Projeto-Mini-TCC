@@ -2,12 +2,93 @@
 <html lang="pt-br">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Projeto Mini-TCC</title>
+    <link rel="stylesheet" href="styleLogin.css">
 <meta charset="UTF-8">
 <title>Login</title>
 <link rel="stylesheet" href="styleLogin.css">
 </head>
 
 <body>
+    <div class="login-container">
+        <div class="form-box">
+            <div class="button-box">
+                <div id="btn"></div>
+                <button type="button" class="toggle-btn" onclick="loginUsuario()">Usuário</button>
+                <button type="button" class="toggle-btn" onclick="loginAdmin()">Admin</button>
+            </div>
+
+            <form id="usuario" class="input-group">
+                <h2>Login Usuário</h2>
+                <input type="text" id="userEmail" class="input-field" placeholder="E-mail: user@tcc.com" required>
+                <input type="password" id="userPass" class="input-field" placeholder="Senha: 123" required>
+                <button type="submit" class="submit-btn">Entrar</button>
+            </form>
+
+            <form id="admin" class="input-group">
+                <h2>Acesso Restrito</h2>
+                <input type="text" id="adminId" class="input-field" placeholder="ID: admin01" required>
+                <input type="password" id="adminPass" class="input-field" placeholder="Chave: admin" required>
+                <button type="submit" class="submit-btn admin-color">Acessar Painel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Elementos para animação das abas
+        var x = document.getElementById("usuario");
+        var y = document.getElementById("admin");
+        var z = document.getElementById("btn");
+
+        function loginAdmin() {
+            x.style.left = "-400px";
+            y.style.left = "50px";
+            z.style.left = "110px";
+        }
+
+        function loginUsuario() {
+            x.style.left = "50px";
+            y.style.left = "450px";
+            z.style.left = "0";
+        }
+
+        // --- LÓGICA DE LOGIN ---
+        
+        const CREDENCIAIS = {
+            usuario: { email: "user@tcc.com", senha: "123" },
+            admin: { id: "admin01", senha: "admin" }
+        };
+
+        // Validação Usuário
+        document.getElementById('usuario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('userEmail').value;
+            const senha = document.getElementById('userPass').value;
+
+            if (email === CREDENCIAIS.usuario.email && senha === CREDENCIAIS.usuario.senha) {
+                localStorage.setItem('tipoUsuario', 'comum'); // Salva quem logou
+                window.location.href = "index.html";
+            } else {
+                alert("E-mail ou Senha de usuário incorretos!");
+            }
+        });
+
+        // Validação Admin
+        document.getElementById('admin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('adminId').value;
+            const senha = document.getElementById('adminPass').value;
+
+            if (id === CREDENCIAIS.admin.id && senha === CREDENCIAIS.admin.senha) {
+                localStorage.setItem('tipoUsuario', 'admin'); // Salva quem logou
+                window.location.href = "index.html";
+            } else {
+                alert("ID ou Chave de Admin incorretos!");
+            }
+        });
+    </script>
 
 <div class="login-container">
 
@@ -28,8 +109,8 @@
 
 <h2>Login Admin</h2>
 
-<input type="text" id="adminId"
-<input type="password" id="adminPass"
+<input type="text" id="adminId" placeholder="admin">
+<input type="password" id="adminPass" placeholder="1234">
 
 <button type="submit">Entrar</button>
 
