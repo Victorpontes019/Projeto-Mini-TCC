@@ -3,114 +3,147 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const { Pool } = require('pg')
+const path = require('path')
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
+
+// abrir login primeiro
+app.get('/', (req,res)=>{
+res.sendFile(path.join(__dirname,"public","login.html"))
+})
+
 app.use(express.static('public'))
 
-// conexão com banco
+// conexão banco
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+connectionString: process.env.DATABASE_URL,
+ssl:{
+rejectUnauthorized:false
+}
+})
+
+
+// LOGIN ADMIN
+app.post('/api/login',(req,res)=>{
+
+const {usuario,senha} = req.body
+
+const adminUsuario = "admin"
+const adminSenha = "1234"
+
+if(usuario === adminUsuario && senha === adminSenha){
+
+res.json({
+sucesso:true
+})
+
+}else{
+
+res.status(401).json({
+sucesso:false
+})
+
+}
+
 })
 
 
 // LISTAR EVENTOS
-app.get('/api/eventos', async (req, res) => {
-    try {
+app.get('/api/eventos', async (req,res)=>{
 
-        const result = await pool.query(
-            'SELECT * FROM eventos ORDER BY id'
-        )
+try{
 
-        res.json(result.rows)
+const result = await pool.query(
+'SELECT * FROM eventos ORDER BY id'
+)
 
-    } catch (err) {
+res.json(result.rows)
 
-        console.error(err)
-        res.status(500).json({ erro: 'Erro ao buscar eventos' })
+}catch(err){
 
-    }
+console.error(err)
+res.status(500).json({erro:"Erro ao buscar eventos"})
+
+}
+
 })
 
 
 // CRIAR EVENTO
-app.post('/api/eventos', async (req, res) => {
+app.post('/api/eventos', async (req,res)=>{
 
-    const { nome, data_evento, local, descricao } = req.body
+const {nome,data_evento,local,descricao} = req.body
 
-    try {
+try{
 
-        await pool.query(
-            'INSERT INTO eventos (nome, data_evento, local, descricao) VALUES ($1,$2,$3,$4)',
-            [nome, data_evento, local, descricao]
-        )
+await pool.query(
+'INSERT INTO eventos (nome,data_evento,local,descricao) VALUES ($1,$2,$3,$4)',
+[nome,data_evento,local,descricao]
+)
 
-        res.json({ mensagem: 'Evento criado' })
+res.json({mensagem:"Evento criado"})
 
-    } catch (err) {
+}catch(err){
 
-        console.error(err)
-        res.status(500).json({ erro: 'Erro ao criar evento' })
+console.error(err)
+res.status(500).json({erro:"Erro ao criar evento"})
 
-    }
+}
 
 })
 
 
 // ATUALIZAR EVENTO
-app.put('/api/eventos/:id', async (req, res) => {
+app.put('/api/eventos/:id', async (req,res)=>{
 
-    const id = req.params.id
-    const { nome, data_evento, local, descricao } = req.body
+const id = req.params.id
+const {nome,data_evento,local,descricao} = req.body
 
-    try {
+try{
 
-        await pool.query(
-            'UPDATE eventos SET nome=$1, data_evento=$2, local=$3, descricao=$4 WHERE id=$5',
-            [nome, data_evento, local, descricao, id]
-        )
+await pool.query(
+'UPDATE eventos SET nome=$1,data_evento=$2,local=$3,descricao=$4 WHERE id=$5',
+[nome,data_evento,local,descricao,id]
+)
 
-        res.json({ mensagem: 'Evento atualizado' })
+res.json({mensagem:"Evento atualizado"})
 
-    } catch (err) {
+}catch(err){
 
-        console.error(err)
-        res.status(500).json({ erro: 'Erro ao atualizar evento' })
+console.error(err)
+res.status(500).json({erro:"Erro ao atualizar evento"})
 
-    }
+}
 
 })
 
 
 // DELETAR EVENTO
-app.delete('/api/eventos/:id', async (req, res) => {
+app.delete('/api/eventos/:id', async (req,res)=>{
 
-    const id = req.params.id
+const id = req.params.id
 
-    try {
+try{
 
-        await pool.query(
-            'DELETE FROM eventos WHERE id=$1',
-            [id]
-        )
+await pool.query(
+'DELETE FROM eventos WHERE id=$1',
+[id]
+)
 
-        res.json({ mensagem: 'Evento deletado' })
+res.json({mensagem:"Evento deletado"})
 
-    } catch (err) {
+}catch(err){
 
-        console.error(err)
-        res.status(500).json({ erro: 'Erro ao deletar' })
+console.error(err)
+res.status(500).json({erro:"Erro ao deletar"})
 
-    }
+}
 
 })
 
-
-app.listen(3000, () => {
-    console.log("Servidor rodando em http://localhost:3000")
+app.listen(3000,()=>{
+console.log("Servidor rodando em http://localhost:3000")
 })

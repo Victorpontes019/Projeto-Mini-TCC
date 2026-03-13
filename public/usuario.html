@@ -1,19 +1,42 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
+
 <head>
-<meta charset="UTF-8">
+
 <title>Eventos</title>
 <link rel="stylesheet" href="style.css">
+
+<script>
+
+if(localStorage.getItem("tipoUsuario") !== "comum"){
+window.location.href="login.html"
+}
+
+</script>
+
 </head>
 
 <body>
 
-<div class="container">
+<button onclick="logout()">Sair</button>
 
-<h1>Lista de Eventos</h1>
+<h1>Eventos</h1>
+
+<h2>Cadastrar Evento</h2>
+
+<input id="nome" placeholder="Nome do evento">
+<input type="date" id="data">
+<input id="local" placeholder="Local">
+<input id="descricao" placeholder="Descrição">
+
+<button onclick="cadastrarEvento()">Cadastrar</button>
+
+<br><br>
 
 <table>
+
 <thead>
+
 <tr>
 <th>ID</th>
 <th>Nome</th>
@@ -21,48 +44,87 @@
 <th>Local</th>
 <th>Descrição</th>
 </tr>
+
 </thead>
 
-<tbody id="tabelaEventos">
-</tbody>
+<tbody id="tabelaEventos"></tbody>
 
 </table>
-
-</div>
 
 <script>
 
 async function carregarEventos(){
 
-try{
-
 const resposta = await fetch("/api/eventos")
 const eventos = await resposta.json()
 
 const tabela = document.getElementById("tabelaEventos")
+
 tabela.innerHTML = ""
 
-eventos.forEach(evento => {
+eventos.forEach(e=>{
 
-const linha = `
+tabela.innerHTML += `
 <tr>
-<td>${evento.id}</td>
-<td>${evento.nome}</td>
-<td>${evento.data_evento}</td>
-<td>${evento.local}</td>
-<td>${evento.descricao}</td>
+<td>${e.id}</td>
+<td>${e.nome}</td>
+<td>${formatarData(e.data_evento)}</td>
+<td>${e.local}</td>
+<td>${e.descricao}</td>
 </tr>
 `
 
-tabela.innerHTML += linha
-
 })
 
-}catch(erro){
+}
 
-console.error("Erro ao carregar eventos:", erro)
+
+async function cadastrarEvento(){
+
+const nome = document.getElementById("nome").value
+const data = document.getElementById("data").value
+const local = document.getElementById("local").value
+const descricao = document.getElementById("descricao").value
+
+await fetch("/api/eventos",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+nome,
+data_evento:data,
+local,
+descricao
+})
+})
+
+document.getElementById("nome").value=""
+document.getElementById("data").value=""
+document.getElementById("local").value=""
+document.getElementById("descricao").value=""
+
+carregarEventos()
 
 }
+
+
+function formatarData(data){
+
+if(!data) return ""
+
+const dataSemHora = data.split("T")[0]
+const partes = dataSemHora.split("-")
+
+return `${partes[2]}/${partes[1]}/${partes[0]}`
+
+}
+
+
+function logout(){
+
+localStorage.removeItem("tipoUsuario")
+window.location.href="login.html"
 
 }
 

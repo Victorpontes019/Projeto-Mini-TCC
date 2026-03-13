@@ -1,88 +1,97 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Projeto Mini-TCC</title>
-    <link rel="stylesheet" href="styleLogin.css">
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="styleLogin.css">
 </head>
+
 <body>
-    <div class="login-container">
-        <div class="form-box">
-            <div class="button-box">
-                <div id="btn"></div>
-                <button type="button" class="toggle-btn" onclick="loginUsuario()">Usuário</button>
-                <button type="button" class="toggle-btn" onclick="loginAdmin()">Admin</button>
-            </div>
 
-            <form id="usuario" class="input-group">
-                <h2>Login Usuário</h2>
-                <input type="text" id="userEmail" class="input-field" placeholder="E-mail: user@tcc.com" required>
-                <input type="password" id="userPass" class="input-field" placeholder="Senha: 123" required>
-                <button type="submit" class="submit-btn">Entrar</button>
-            </form>
+<div class="login-container">
 
-            <form id="admin" class="input-group">
-                <h2>Acesso Restrito</h2>
-                <input type="text" id="adminId" class="input-field" placeholder="ID: admin01" required>
-                <input type="password" id="adminPass" class="input-field" placeholder="Chave: admin" required>
-                <button type="submit" class="submit-btn admin-color">Acessar Painel</button>
-            </form>
-        </div>
-    </div>
+<form id="usuario">
 
-    <script>
-        // Elementos para animação das abas
-        var x = document.getElementById("usuario");
-        var y = document.getElementById("admin");
-        var z = document.getElementById("btn");
+<h2>Login Usuário</h2>
 
-        function loginAdmin() {
-            x.style.left = "-400px";
-            y.style.left = "50px";
-            z.style.left = "110px";
-        }
+<input type="text" id="userEmail" placeholder="user@tcc.com">
+<input type="password" id="userPass" placeholder="123">
 
-        function loginUsuario() {
-            x.style.left = "50px";
-            y.style.left = "450px";
-            z.style.left = "0";
-        }
+<button type="submit">Entrar</button>
 
-        // --- LÓGICA DE LOGIN ---
-        
-        const CREDENCIAIS = {
-            usuario: { email: "user@tcc.com", senha: "123" },
-            admin: { id: "admin01", senha: "admin" }
-        };
+</form>
 
-        // Validação Usuário
-        document.getElementById('usuario').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('userEmail').value;
-            const senha = document.getElementById('userPass').value;
+<hr>
 
-            if (email === CREDENCIAIS.usuario.email && senha === CREDENCIAIS.usuario.senha) {
-                localStorage.setItem('tipoUsuario', 'comum'); // Salva quem logou
-                window.location.href = "index.html";
-            } else {
-                alert("E-mail ou Senha de usuário incorretos!");
-            }
-        });
+<form id="admin">
 
-        // Validação Admin
-        document.getElementById('admin').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const id = document.getElementById('adminId').value;
-            const senha = document.getElementById('adminPass').value;
+<h2>Login Admin</h2>
 
-            if (id === CREDENCIAIS.admin.id && senha === CREDENCIAIS.admin.senha) {
-                localStorage.setItem('tipoUsuario', 'admin'); // Salva quem logou
-                window.location.href = "index.html";
-            } else {
-                alert("ID ou Chave de Admin incorretos!");
-            }
-        });
-    </script>
+<input type="text" id="adminId" placeholder="admin">
+<input type="password" id="adminPass" placeholder="1234">
+
+<button type="submit">Entrar</button>
+
+</form>
+
+</div>
+
+
+<script>
+
+document.getElementById('usuario').addEventListener('submit', function(e){
+
+e.preventDefault()
+
+const email = document.getElementById("userEmail").value
+const senha = document.getElementById("userPass").value
+
+if(email === "user@tcc.com" && senha === "123"){
+
+localStorage.setItem("tipoUsuario","comum")
+window.location.href="usuario.html"
+
+}else{
+
+alert("Login inválido")
+
+}
+
+})
+
+
+document.getElementById('admin').addEventListener('submit', async function(e){
+
+e.preventDefault()
+
+const usuario = document.getElementById("adminId").value
+const senha = document.getElementById("adminPass").value
+
+const resposta = await fetch("/api/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({usuario,senha})
+})
+
+const dados = await resposta.json()
+
+if(dados.sucesso){
+
+localStorage.setItem("tipoUsuario","admin")
+window.location.href="index.html"
+
+}else{
+
+alert("Login admin inválido")
+
+}
+
+})
+
+</script>
+
 </body>
 </html>
