@@ -1,134 +1,154 @@
-const api = "http://localhost:3000/api/eventos";
+require('dotenv').config()
 
-let idEditando = null;
+const express = require('express')
+const cors = require('cors')
+const { Pool } = require('pg')
+const path = require('path')
+
+const app = express()
+
+app.use(cors())
+app.use(express.json())
+
+// servir arquivos da pasta public
+app.use(express.static(path.join(__dirname, "public")))
+
+// abrir login primeiro
+app.get('/', (req,res)=>{
+res.sendFile(path.join(__dirname,"public","login.html"))
+})
+
+// conexão banco
+const pool = new Pool({
+connectionString: process.env.DATABASE_URL,
+ssl:{
+rejectUnauthorized:false
+}
+})
 
 
-// FORMATAR DATA
-function formatarData(data) {
+// LOGIN ADMIN
+app.post('/api/login',(req,res)=>{
 
-    if (!data) return "";
+const {usuario,senha} = req.body
 
-    const dataSemHora = data.split("T")[0];
-    const partes = dataSemHora.split("-");
+const adminUsuario = "admin"
+const adminSenha = "1234"
 
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+if(usuario === adminUsuario && senha === adminSenha){
+
+res.json({
+sucesso:true
+})
+
+}else{
+
+res.status(401).json({
+sucesso:false
+})
+
 }
 
-
-// CADASTRAR OU ATUALIZAR EVENTO
-function cadastrarEvento() {
-
-    const nome = document.getElementById("nome").value;
-    const data_evento = document.getElementById("data_evento").value;
-    const local = document.getElementById("local").value;
-    const descricao = document.getElementById("descricao").value;
-
-    if (!nome || !data_evento || !local || !descricao) {
-        alert("Preencha todos os campos!");
-        return;
-    }
-
-    const metodo = idEditando ? "PUT" : "POST";
-    const url = idEditando ? `${api}/${idEditando}` : api;
-
-    fetch(url, {
-        method: metodo,
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            nome,
-            data_evento,
-            local,
-            descricao
-        })
-    })
-    .then(res => res.json())
-    .then(() => {
-
-        listarEventos();
-        limparCampos();
-        idEditando = null;
-
-    })
-    .catch(err => {
-        console.error("Erro:", err);
-    });
-
-}
+})
 
 
 // LISTAR EVENTOS
-function listarEventos() {
+app.get('/api/eventos', async (req,res)=>{
 
-    fetch(api)
-    .then(res => res.json())
-    .then(eventos => {
+try{
 
-        const tabela = document.getElementById("tabelaEventos");
-        tabela.innerHTML = "";
+const result = await pool.query(
+'SELECT * FROM eventos ORDER BY id'
+)
 
-        eventos.forEach(evento => {
+res.json(result.rows)
 
-            tabela.innerHTML += `
-            <tr>
-                <td>${evento.id}</td>
-                <td>${evento.nome}</td>
-                <td>${formatarData(evento.data_evento)}</td>
-                <td>${evento.local}</td>
-                <td>${evento.descricao}</td>
-                <td>
-                    <button onclick="deletarEvento(${evento.id})">Excluir</button>
-                    <button onclick='editarEvento(${JSON.stringify(evento)})'>Editar</button>
-                </td>
-            </tr>
-            `;
+}catch(err){
 
-        });
-
-    })
-    .catch(err => {
-        console.error("Erro ao carregar eventos:", err);
-    });
+console.error(err)
+res.status(500).json({erro:"Erro ao buscar eventos"})
 
 }
 
+})
 
-// EDITAR EVENTO
-function editarEvento(evento) {
 
-    document.getElementById("nome").value = evento.nome;
-    document.getElementById("data_evento").value = evento.data_evento.split("T")[0];
-    document.getElementById("local").value = evento.local;
-    document.getElementById("descricao").value = evento.descricao;
+// CRIAR EVENTO
+app.post('/api/eventos', async (req,res)=>{
 
-    idEditando = evento.id;
+const {nome,data_evento,local,descricao} = req.body
+
+try{
+
+await pool.query(
+'INSERT INTO eventos (nome,data_evento,local,descricao) VALUES ($1,$2,$3,$4)',
+[nome,data_evento,local,descricao]
+)
+
+res.json({mensagem:"Evento criado"})
+
+}catch(err){
+
+console.error(err)
+res.status(500).json({erro:"Erro ao criar evento"})
 
 }
+
+})
+
+
+// ATUALIZAR EVENTO
+app.put('/api/eventos/:id', async (req,res)=>{
+
+const id = req.params.id
+const {nome,data_evento,local,descricao} = req.body
+
+try{
+
+await pool.query(
+'UPDATE eventos SET nome=$1,data_evento=$2,local=$3,descricao=$4 WHERE id=$5',
+[nome,data_evento,local,descricao,id]
+)
+
+res.json({mensagem:"Evento atualizado"})
+
+}catch(err){
+
+console.error(err)
+res.status(500).json({erro:"Erro ao atualizar evento"})
+
+}
+
+})
 
 
 // DELETAR EVENTO
-function deletarEvento(id) {
+app.delete('/api/eventos/:id', async (req,res)=>{
 
-    fetch(`${api}/${id}`, {
-        method: "DELETE"
-    })
-    .then(() => listarEventos())
-    .catch(err => console.error("Erro ao deletar:", err));
+const id = req.params.id
+
+try{
+
+await pool.query(
+'DELETE FROM eventos WHERE id=$1',
+[id]
+)
+
+res.json({mensagem:"Evento deletado"})
+
+}catch(err){
+
+console.error(err)
+res.status(500).json({erro:"Erro ao deletar"})
 
 }
 
-
-// LIMPAR CAMPOS
-function limparCampos() {
-
-    document.getElementById("nome").value = "";
-    document.getElementById("data_evento").value = "";
-    document.getElementById("local").value = "";
-    document.getElementById("descricao").value = "";
-
-}
+})
 
 
-// CARREGAR EVENTOS
-listarEventos();
+// PORTA PARA RENDER
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+console.log(`Servidor rodando na porta ${PORT}`)
+})
