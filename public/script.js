@@ -1,5 +1,4 @@
-const api = "http://localhost:3000/api/eventos";
-
+const api = "/api/eventos";
 let idEditando = null;
 
 
